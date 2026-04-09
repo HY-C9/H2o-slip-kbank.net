@@ -553,7 +553,8 @@
                     const data = docSnap.data();
                     const localSession = localStorage.getItem('currentSessionId');
 
-                    if (localSession && data.currentSessionId && data.currentSessionId !== localSession) {
+                    // 🎯 อัปเดตเงื่อนไขเช็คโหมดการแชร์บัญชีที่นี่
+                    if (!data.allowMultiSession && localSession && data.currentSessionId && data.currentSessionId !== localSession) {
                         alert("⚠️ มีการล็อคอินซ้อน กำลังออกจากระบบ..");
                         await signOut(auth);
                         window.location.replace('https://hy-c9.github.io/Slip-H2o-login.net/');
