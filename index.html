@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างสลิป กสิกรไทย - Slip System Premium</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        :root {
+            --bg-main: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --sidebar-bg: rgba(15, 23, 42, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff; 
+            --text-muted: #cbd5e1; 
+            --kbank-green: #00a950;
+            --kbank-green-hover: #008a41;
+            --input-bg: rgba(0, 0, 0, 0.25); 
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        body.theme-pastel {
+            --bg-main: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+            --sidebar-bg: rgba(255, 255, 255, 0.7);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --text-main: #022c22; 
+            --text-muted: #334155;
+            --input-bg: #ffffff;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Kanit', sans-serif; min-height: 100vh; margin: 0; transition: all 0.5s ease; }
+        .slip-shell { display: flex; height: 100vh; overflow: hidden; }
+        
+        /* บีบ Sidebar ให้แคบลง */
+        .slip-sidebar { width: 250px; display: flex; flex-direction: column; background: var(--sidebar-bg); border-right: 1px solid var(--card-border); backdrop-filter: blur(20px); padding: 15px; overflow-y: auto; flex-shrink: 0; transition: all 0.5s ease;}
+        .slip-main { flex-grow: 1; overflow-y: auto; padding: 15px 25px; }
+        
+        .sidebar-brand img { max-width: 130px; margin-bottom: 25px; width: 100%; object-fit: contain;}
+        .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-link { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px !important; color: var(--text-muted); text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 500; font-size: 0.85rem; transition: all 0.3s ease; }
+        .sidebar-link:hover, .sidebar-link.active { background: var(--kbank-green); color: #fff; transform: translateX(4px); }
+        .sidebar-icon-img { width: 18px !important; height: 18px !important; object-fit: contain !important; border-radius: 0 !important; }
+        
+        .slip-navbar { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; backdrop-filter: blur(20px); padding: 8px 15px; margin-bottom: 15px; }
+        
+        .btn-theme-super { background: #ffffff; color: #0f172a; border: 2px solid #ffffff; box-shadow: 0 4px 15px rgba(255,255,255,0.2); transition: all 0.3s ease; font-size: 0.8rem;}
+        .btn-theme-super:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,255,255,0.4); background: #f8fafc;}
+        body.theme-pastel .btn-theme-super { background: #0f172a; color: #ffffff; border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        body.theme-pastel .btn-theme-super:hover { background: #1e293b; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        
+        /* ปรับขนาดฟอร์มให้กะทัดรัดขึ้น */
+        .form-section-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 15px; margin-bottom: 10px; backdrop-filter: blur(20px); box-shadow: var(--shadow); }
+        .form-section-title { font-size: 0.9rem; font-weight: 600; color: var(--kbank-green); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .form-label { font-weight: 600; color: var(--text-main); font-size: 0.75rem; margin-bottom: 3px;}
+        .form-control, .form-select { background-color: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { background-color: var(--input-bg); border-color: var(--kbank-green); box-shadow: 0 0 0 2px rgba(0, 169, 80, 0.2); color: var(--text-main); }
+        ::placeholder { color: var(--text-muted); opacity: 0.7; font-weight: 400;}
+        
+        .btn-kbank { background: var(--kbank-green); color: white; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: none; transition: all 0.3s; }
+        .btn-kbank:hover { background: var(--kbank-green-hover); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 169, 80, 0.4); color: white;}
+        
+        /* ขยายขนาดโฮโลแกรมสลิปให้ใหญ่ขึ้นเต็มพื้นที่ */
+        .holo-display-wrapper { position: sticky; top: 15px; display: flex; justify-content: center; align-items: center; height: calc(100vh - 100px); perspective: 1000px; }
+        .holo-card { width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.02); border-radius: 24px; padding: 18px; box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 15px rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: relative; transform-style: preserve-3d; animation: float 6s ease-in-out infinite; transition: all 0.5s ease; }
+        .holo-card::before { content: ''; position: absolute; top: -1px; left: 15%; right: 15%; height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); border-radius: 10px; opacity: 0.8; }
+        .holo-card::after { content: ''; position: absolute; bottom: -15px; left: 15%; right: 15%; height: 8px; background: #3b82f6; filter: blur(20px); opacity: 0.4; border-radius: 50%; }
+        @keyframes float { 0% { transform: translateY(0px) rotateX(2deg); } 50% { transform: translateY(-6px) rotateX(-2deg); } 100% { transform: translateY(0px) rotateX(2deg); } }
+        .holo-screen { width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.8); }
+        body.theme-pastel .holo-card { background: rgba(255, 255, 255, 0.5); box-shadow: 0 15px 30px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.6); }
+        body.theme-pastel .holo-card::after { opacity: 0.15; }
+        #canvas { width: 100%; height: auto; display: block; object-fit: contain; }
+        
+        .form-switch .form-check-input { width: 2.2em; height: 1.1em; margin-top: 0.1em; background-color: var(--input-bg); border-color: var(--card-border); cursor: pointer; }
+        .form-switch .form-check-input:checked { background-color: var(--kbank-green); border-color: var(--kbank-green); }
+        .alert-custom { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="slip-shell">
+  <aside class="slip-sidebar">
+    <div class="sidebar-brand text-center">
+      <img src="assets/image/logo1/logo-h2o.png" alt="Slip H2O">
+    </div>
+    <nav class="sidebar-menu">
+      <a href="dashboard.php" class="sidebar-link"><i class="bi bi-grid-1x2-fill"></i> หน้าแรก</a>
+      <a href="slip_kbank.php" class="sidebar-link active"><img src="assets/image/logo1/p-kbank.png" class="sidebar-icon-img"> สลิป กสิกรไทย</a>
+      <a href="slip_scb.php" class="sidebar-link"><img src="assets/image/logo1/p-scb.png" class="sidebar-icon-img"> สลิป ไทยพาณิชย์</a>
+      <a href="slip_ktb.php" class="sidebar-link"><img src="assets/image/logo1/p-kt.png" class="sidebar-icon-img"> สลิป กรุงไทย</a>
+      <a href="slip_bay.php" class="sidebar-link"><img src="assets/image/logo1/p-kung.png" class="sidebar-icon-img"> สลิป กรุงศรี</a>
+      <a href="slip_bbl.php" class="sidebar-link"><img src="assets/image/logo1/p-bl.png" class="sidebar-icon-img"> สลิป กรุงเทพ</a>
+      <a href="slip_ttb.php" class="sidebar-link"><img src="assets/image/logo1/p-ttb.png" class="sidebar-icon-img"> สลิป TTB</a>
+      <a href="slip_gsb.php" class="sidebar-link"><img src="assets/image/logo1/p-o.png" class="sidebar-icon-img"> สลิป ออมสิน</a>
+      <a href="slip_kkp.php" class="sidebar-link"><img src="assets/image/logo1/p-kpp.png" class="sidebar-icon-img"> สลิป KKP</a>
+      <a href="slip_cimb.php" class="sidebar-link"><img src="assets/image/logo1/p-cimb.png" class="sidebar-icon-img"> สลิป CIMB</a>
+      <a href="slip_baac.php" class="sidebar-link"><img src="assets/image/logo1/p-tks.png" class="sidebar-icon-img"> สลิป ธ.ก.ส.</a>
+      <a href="slip_linebk.php" class="sidebar-link"><img src="assets/image/logo1/p-linebk.png" class="sidebar-icon-img"> สลิป LINE BK</a>
+      <a href="slip_make.php" class="sidebar-link"><img src="assets/image/logo1/p-make.png" class="sidebar-icon-img"> สลิป MAKE</a>
+    </nav>
+  </aside>
+
+  <div class="slip-main">
+    <nav class="navbar navbar-expand-lg slip-navbar d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0 fw-bold" style="color: var(--text-main); font-size: 1.05rem;">
+            <img src="assets/image/icon/KBANK.png" style="width: 22px; margin-right: 5px;"> ระบบสร้างสลิป กสิกรไทย
+        </h5>
+      </div>
+      <div>
+        <button id="themeToggleBtn" class="btn btn-theme-super rounded-pill px-3 py-1 fw-bold">
+          <i class="bi bi-moon-stars-fill me-1" id="themeIcon"></i> <span id="themeText">โหมดพาสเทล</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="container-fluid p-0">
+      <div class="row g-3">
+        
+        <div class="col-lg-4">
+            <div class="alert-custom">xxx-x-x0000-x (10 หลัก) <br> xxx-x-x0000-xxx (12 หลัก)<br>xxx-xxx-0000 (พร้อมเพย์)<br>000-xxxxxxxx-0000 (พร้อมเพย์วอลเล็ท)
+            </div>
+
+            <div class="form-section-card">
+                <div class="form-check form-switch pb-1 mb-0">
+                    <input class="form-check-input" type="checkbox" id="modeSwitch" onchange="toggleMode()">
+                    <label class="form-check-label ms-2" for="modeSwitch" style="color: var(--kbank-green); font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                        เปิดโหมดสลิปบันทึกช่วยจำ
+                    </label>
+                </div>
+                <div id="noteOptions" style="display: none; margin-top: 8px; border-top: 1px dashed var(--card-border); padding-top: 10px;">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label for="AideMemoire" class="form-label text-warning">บันทึกช่วยจำ</label>
+                            <input type="text" class="form-control" id="AideMemoire" value="ค่าเหล้าค่าเบียร์" oninput="updateDisplay()">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bg_note" class="form-label text-warning">พื้นหลังโน้ต</label>
+                            <select class="form-select" id="bg_note" onchange="syncNormalBackground(); updateDisplay()">
+                                <option value="assets/image/bs/N-K1T.jpg">ต้นฉบับ</option>
+                                <option value="assets/image/bs/N-KK1TT.jpg">ต้นฉบับ(จ่ายบิล)</option>
+                                <option value="assets/image/bs/N-K65T.jpg">THE WISDOM 2024</option>
+                                <option value="assets/image/bs/N-K2T.jpg">มีสุขสมสวัง</option>
+                                <option value="assets/image/bs/N-K3T.jpg">โอลิมปิก2024</option>
+                                <option value="assets/image/bs/N-K4T.jpg">โปรยเงิน</option>
+                                <option value="assets/image/bs/N-K5T.jpg">วันพีช</option>
+                                <option value="assets/image/bs/N-K6T.jpg">สายรุ้ง</option>
+                                <option value="assets/image/bs/N-K7T.jpg">กาฟิว</option>
+                                <option value="assets/image/bs/N-K19T.jpg">กาฟิวหน้ามึน</option>
+                                <option value="assets/image/bs/N-K8T.jpg">คิตตี้</option>
+                                <option value="assets/image/bs/N-K9T.jpg">หมี</option>
+                                <option value="assets/image/bs/N-K10T.jpg">ยักษ์ร่ำรวย</option>
+                                <option value="assets/image/bs/N-K11T.jpg">มั่งมีสำเร็จ</option>
+                                <option value="assets/image/bs/N-K12T.jpg">ร่ำรวยงดงาม</option>
+                                <option value="assets/image/bs/N-K13T.jpg">ชินจัง</option>
+                                <option value="assets/image/bs/N-K14T.jpg">มั่งคั่งร่ำรวย</option>
+                                <option value="assets/image/bs/N-K15T.jpg">หมาร่ำรวย</option>
+                                <option value="assets/image/bs/N-K17T.jpg">อายุน้อย100สลิป</option>
+                                <option value="assets/image/bs/N-K18T.jpg">นุ้งหมาฮูโต๋</option>
+                                <option value="assets/image/bs/N-K20T.jpg">hello kitty</option>
+                                <option value="assets/image/bs/N-K21T.jpg">ดอกม่วง</option>
+                                <option value="assets/image/bs/N-K22T.jpg">นางฟ้า</option>
+                                <option value="assets/image/bs/N-K24T.jpg">ต่ายขาวมงคล</option>
+                                <option value="assets/image/bs/N-K25T.jpg">หมีน้อยคอยรัก</option>
+                                <option value="assets/image/bs/N-K26T.jpg">ประธานต่าย</option>
+                                <option value="assets/image/bs/N-K27T.jpg">สาธุ</option>
+                                <option value="assets/image/bs/N-K28T.jpg">snoopy1</option>
+                                <option value="assets/image/bs/N-K35T.jpg">เหมียวอ้วนจอมซน</option>
+                                <option value="assets/image/bs/N-K36T.jpg">ชินจังทะเล</option>
+                                <option value="assets/image/bs/N-K37T.jpg">ชินจังดาวจันทร์</option>
+                                <option value="assets/image/bs/N-K38T.jpg">มินเนี่ยน1</option>
+                                <option value="assets/image/bs/N-K39T.jpg">มินเนี่ยน2</option>
+                                <option value="assets/image/bs/N-K40T.jpg">โอมจงรวย</option>
+                                <option value="assets/image/bs/N-K41T.jpg">แมวรวย</option>
+                                <option value="assets/image/bs/N-K42T.jpg">ต่ายแข็งแรง</option>
+                                <option value="assets/image/bs/N-K43T.jpg">หมีสี่แฉก</option>
+                                <option value="assets/image/bs/N-K44T.jpg">พระพิฆเนศทำนาย</option>
+                                <option value="assets/image/bs/N-K45T.jpg">แมวอลเวง</option>
+                                <option value="assets/image/bs/N-K46T.jpg">ชินจังกับแมวหนวด</option>
+                                <option value="assets/image/bs/N-K47T.jpg">มูสามเทพ</option>
+                                <option value="assets/image/bs/N-K55T.jpg">พิฆเนศ</option>
+                                <option value="assets/image/bs/N-K56T.jpg">พระพิฆเนศ</option>
+                                <option value="assets/image/bs/N-K57T.jpg">เจ้าแม่เงินทอง</option>
+                                <option value="assets/image/bs/N-K48T.jpg">เจ้าแม่คาปิบาร่า</option>
+                                <option value="assets/image/bs/N-K49T.jpg">วิชาสามดาบ ซันโทริว</option>
+                                <option value="assets/image/bs/N-K50T.jpg">การ์ดราชาแมว</option>
+                                <option value="assets/image/bs/N-K51T.jpg">พาสปอร์ต</option>
+                                <option value="assets/image/bs/N-K52T.jpg">ชินจังร้องเต้น</option>
+                                <option value="assets/image/bs/N-K53T.jpg">ลิซ่า&โรเซ่</option>
+                                <option value="assets/image/bs/N-K54T.jpg">ต่ายใบ้หวย</option>
+                                <option value="assets/image/bs/N-K32T.jpg">ไพ่มงคล(จันทร์)</option>
+                                <option value="assets/image/bs/N-K34T.jpg">ไพ่มงคล(อังคาร)</option>
+                                <option value="assets/image/bs/N-K33T.jpg">ไพ่มงคล(พุธ)</option>
+                                <option value="assets/image/bs/N-K30T.jpg">ไพ่มงคล(พฤหัส)</option>
+                                <option value="assets/image/bs/N-K29T.jpg">ไพ่มงคล(ศุกร์)</option>
+                                <option value="assets/image/bs/N-K23T.jpg">ไพ่มงคล(เสาร์)</option>
+                                <option value="assets/image/bs/N-K31T.jpg">ไพ่มงคล(อาทิตย์)</option>
+                                <option value="assets/image/bs/N-K58T.jpg">ลูฟี่(นิกะ)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section-card">
+                <div class="form-section-title"><i class="bi bi-person-lines-fill"></i> ข้อมูลบัญชี</div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label for="sendername" class="form-label text-success">ผู้โอน</label>
+                        <input type="text" class="form-control mb-2" id="sendername" value="น.ส. บุษบา บ" oninput="updateDisplay()">
+                        <input type="text" class="form-control" id="senderaccount" value="xxx-x-x5269-x" oninput="updateDisplay()">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="receivername" class="form-label text-primary">ผู้รับ</label>
+                        <input type="text" class="form-control mb-2" id="receivername" value="นาย กบ เขียด" oninput="updateDisplay()">
+                        <input type="text" class="form-control mb-2" id="receiveraccount" value="xxx-x-x0142-x" oninput="updateDisplay()">
+                        <select class="form-select" id="bank" onchange="autoFormatAccount(); updateDisplay()">
+                            <option value="ธ.กสิกรไทย">ธ.กสิกรไทย</option>
+                            <option value="ธ.กรุงไทย">ธ.กรุงไทย</option>
+                            <option value="ธ.กรุงเทพ">ธ.กรุงเทพ</option>
+                            <option value="ธ.ไทยพาณิชย์">ธ.ไทยพาณิชย์</option>
+                            <option value="ธ.กรุงศรีอยุธยา">ธ.กรุงศรีอยุธยา</option>
+                            <option value="ธ.ทหารไทยธนชาต">ธ.ทหารไทยธนชาต</option>
+                            <option value="ธ.ออมสิน">ธ.ออมสิน</option>
+                            <option value="ธ.ก.ส.">ธ.ก.ส.</option>
+                            <option value="ธ.อาคารสงเคราะห์">ธ.อาคารสงเคราะห์</option>
+                            <option value="ธ.เกียรตินาคินภัทร">ธ.เกียรตินาคินภัทร</option>
+                            <option value="ธ.ซีไอเอ็มบี">ธ.ซีไอเอ็มบี</option>
+                            <option value="ธ.ยูโอบี">ธ.ยูโอบี</option>
+                            <option value="ธ.แลนด์ แอนด์ เฮ้าส์">ธ.แลนด์ แอนด์ เฮ้าส์</option>
+                            <option value="ธ.ไอซีบีซี">ธ.ไอซีบีซี</option>
+                            <option value="รหัสพร้อมเพย์">พร้อมเพย์</option>
+                            <option value="พร้อมเพย์วอลเล็ท">พร้อมเพย์วอลเล็ท</option>
+                            <option value="MetaAds">MetaAds</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section-card">
+                <div class="form-section-title"><i class="bi bi-clock-history"></i> จำนวนเงิน & เวลา</div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label for="amount11" class="form-label">จำนวนเงิน (บาท)</label>
+                        <input type="text" class="form-control" id="amount11" value="3,300.00" oninput="updateDisplay()">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="datetime" class="form-label">เวลา (ว/ด/ป ช:น:ว)</label>
+                        <input type="datetime-local" class="form-control" id="datetime" step="1" required oninput="updateDisplay()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section-card">
+                <div class="form-section-title"><i class="bi bi-palette-fill"></i> ตกแต่ง & QR Code</div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label for="imageSelect" class="form-label">สติ๊กเกอร์</label>
+                        <select class="form-select" id="imageSelect" onchange="updateDisplay()">
+                            <option value="assets/image/st/NO.png">ไม่ใส่</option>
+                            <option value="assets/image/st/StickerslipK1.png">สีขาว</option>
+                            <option value="assets/image/st/StickerslipK2.png">สีขาว(2)</option>
+                            <option value="assets/image/st/StickerslipK3.png">สีขาว(3)</option>
+                            <option value="assets/image/st/StickerslipK4.png">สีแดง</option>
+                            <option value="assets/image/st/StickerslipK5.png">สีแดง(2)</option>
+                            <option value="assets/image/st/StickerslipK6.png">สีฟ้า</option>
+                            <option value="assets/image/st/StickerslipK7.png">สีเขียว</option>
+                            <option value="assets/image/st/StickerslipK8.png">สีเหลือง</option>
+                            <option value="assets/image/st/StickerslipK9.png">สีขาว(4)</option>
+                            <option value="assets/image/st/StickerslipK10.png">สีขาว(5)</option>
+                            <option value="assets/image/st/StickerslipK11.png">จุ๊บ</option>
+                            <option value="assets/image/st/StickerslipK12.png">ขับรถ</option>
+                            <option value="assets/image/st/StickerslipK13.png">หมีร้องไห้</option>
+                            <option value="assets/image/st/StickerslipK14.png">ไม่ไหวแย้ว</option>
+                            <option value="assets/image/st/StickerslipK15.png">ยิ้ม</option>
+                            <option value="assets/image/st/StickerslipK16.png">สุดยอด!</option>
+                            <option value="assets/image/st/StickerslipK17.png">ชิจังไข้</option>
+                            <option value="assets/image/st/StickerslipK18.png">โมจังถูกใจ</option>
+                            <option value="assets/image/st/StickerslipK19.png">ชิจังซึม</option>
+                            <option value="assets/image/st/StickerslipK20.png">เยี่ยม</option>
+                            <option value="assets/image/st/StickerslipK21.png">หมีหลับ</option>
+                            <option value="assets/image/st/StickerslipK22.png">มิวสิค!</option>
+                            <option value="assets/image/st/StickerslipK23.png">ชิจังจุ๊บ</option>
+                            <option value="assets/image/st/StickerslipK24.png">มินิฮาร์ท</option>
+                            <option value="assets/image/st/StickerslipK25.png">ชิจัง</option>
+                            <option value="assets/image/st/StickerslipK26.png">เยี่ยมไปเลย</option>
+                            <option value="assets/image/st/StickerslipK27.png">โอเค</option>
+                            <option value="assets/image/st/StickerslipK28.png">งงจัง</option>
+                            <option value="assets/image/st/StickerslipK29.png">แหม่ๆ</option>
+                            <option value="assets/image/st/StickerslipK30.png">สาธุ</option>
+                            <option value="assets/image/st/StickerslipK31.png">ชิจังชี้</option>
+                            <option value="assets/image/st/StickerslipK32.png">ชิจังถูกใจ</option>
+                            <option value="assets/image/st/StickerslipK33.png">+1</option>
+                            <option value="assets/image/st/StickerslipK34.png">หิวจัง</option>
+                            <option value="assets/image/st/StickerslipK35.png">เพลงมา</option>
+                            <option value="assets/image/st/StickerslipK36.png">เดินเล่น</option>
+                            <option value="assets/image/st/StickerslipK37.png">ตายซะ</option>
+                            <option value="assets/image/st/StickerslipK38.png">ฉลอง</option>
+                            <option value="assets/image/st/StickerslipK39.png">จุ๊บ(2)</option>
+                            <option value="assets/image/st/StickerslipK40.png">ok</option>
+                            <option value="assets/image/st/StickerslipK41.png">Love U</option>
+                            <option value="assets/image/st/StickerslipK42.png">++1</option>
+                            <option value="assets/image/st/StickerslipK1.png">NOTE-1</option>
+                            <option value="assets/image/st/StickerslipK2.png">NOTE-2</option>
+                            <option value="assets/image/st/StickerslipK3.png">NOTE-3</option>
+                            <option value="assets/image/st/StickerslipK4.png">NOTE-4</option>
+                            <option value="assets/image/st/StickerslipK5.png">NOTE-5</option>
+                            <option value="assets/image/st/StickerslipK6.png">NOTE-6</option>
+                            <option value="assets/image/st/StickerslipK7.png">NOTE-7</option>
+                            <option value="assets/image/st/StickerslipK8.png">NOTE-8</option>
+                            <option value="assets/image/st/StickerslipK9.png">NOTE-9</option>
+                            <option value="assets/image/st/StickerslipK10.png">NOTE-10</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="backgroundSelect" class="form-label">พื้นหลัง (ปกติ)</label>
+                        <select class="form-select" id="backgroundSelect" onchange="syncNoteBackground(); updateDisplay()">
+                            <option value="assets/image/bs/N-K1.jpg">ต้นฉบับ</option>
+                            <option value="assets/image/bs/N-KK1.jpg">ต้นฉบับ(จ่ายบิล)</option>
+                            <option value="assets/image/bs/N-K65.jpg">THE WISDOM</option>
+                            <option value="assets/image/bs/N-K2.jpg">มีสุขสมสวัง</option>
+                            <option value="assets/image/bs/N-K3.jpg">โอลิมปิก</option>
+                            <option value="assets/image/bs/N-K4.jpg">โปรยเงิน</option>
+                            <option value="assets/image/bs/N-K5.jpg">วันพีช</option>
+                            <option value="assets/image/bs/N-K6.jpg">สายรุ้ง</option>
+                            <option value="assets/image/bs/N-K7.jpg">กาฟิว</option>
+                            <option value="assets/image/bs/N-K19.jpg">กาฟิวหน้ามึน</option>
+                            <option value="assets/image/bs/N-K8.jpg">คิตตี้</option>
+                            <option value="assets/image/bs/N-K9.jpg">หมี</option>
+                            <option value="assets/image/bs/N-K10.jpg">ยักษ์ร่ำรวย</option>
+                            <option value="assets/image/bs/N-K11.jpg">มั่งมีสำเร็จ</option>
+                            <option value="assets/image/bs/N-K12.jpg">ร่ำรวยงดงาม</option>
+                            <option value="assets/image/bs/N-K13.jpg">ชินจัง</option>
+                            <option value="assets/image/bs/N-K14.jpg">มั่งคั่งร่ำรวย</option>
+                            <option value="assets/image/bs/N-K15.jpg">หมาร่ำรวย</option>
+                            <option value="assets/image/bs/N-K17.jpg">อายุน้อย100</option>
+                            <option value="assets/image/bs/N-K18.jpg">นุ้งหมาฮูโต๋</option>
+                            <option value="assets/image/bs/N-K20.jpg">hello kitty</option>
+                            <option value="assets/image/bs/N-K21.jpg">ดอกม่วง</option>
+                            <option value="assets/image/bs/N-K22.jpg">นางฟ้า</option>
+                            <option value="assets/image/bs/N-K24.jpg">ต่ายขาว</option>
+                            <option value="assets/image/bs/N-K25.jpg">หมีน้อย</option>
+                            <option value="assets/image/bs/N-K26.jpg">ประธานต่าย</option>
+                            <option value="assets/image/bs/N-K27.jpg">สาธุ</option>
+                            <option value="assets/image/bs/N-K28.jpg">snoopy</option>
+                            <option value="assets/image/bs/N-K35.jpg">เหมียวอ้วน</option>
+                            <option value="assets/image/bs/N-K36.jpg">ชินจังทะเล</option>
+                            <option value="assets/image/bs/N-K37.jpg">ชินจังจันทร์</option>
+                            <option value="assets/image/bs/N-K38.jpg">มินเนี่ยน</option>
+                            <option value="assets/image/bs/N-K39.jpg">มินเนี่ยน2</option>
+                            <option value="assets/image/bs/N-K40.jpg">โอมจงรวย</option>
+                            <option value="assets/image/bs/N-K41.jpg">แมวรวย</option>
+                            <option value="assets/image/bs/N-K42.jpg">ต่ายแข็งแรง</option>
+                            <option value="assets/image/bs/N-K43.jpg">หมีสี่แฉก</option>
+                            <option value="assets/image/bs/N-K44.jpg">พระพิฆเนศ</option>
+                            <option value="assets/image/bs/N-K45.jpg">แมวอลเวง</option>
+                            <option value="assets/image/bs/N-K46.jpg">ชินจังแมว</option>
+                            <option value="assets/image/bs/N-K47.jpg">มูสามเทพ</option>
+                            <option value="assets/image/bs/N-K55.jpg">พิฆเนศ</option>
+                            <option value="assets/image/bs/N-K56.jpg">พระพิฆเนศ</option>
+                            <option value="assets/image/bs/N-K57.jpg">เจ้าแม่เงินทอง</option>
+                            <option value="assets/image/bs/N-K48.jpg">คาปิบาร่า</option>
+                            <option value="assets/image/bs/N-K49.jpg">ซันโทริว</option>
+                            <option value="assets/image/bs/N-K50.jpg">ราชาแมว</option>
+                            <option value="assets/image/bs/N-K51.jpg">พาสปอร์ต</option>
+                            <option value="assets/image/bs/N-K52.jpg">ชินจังเต้น</option>
+                            <option value="assets/image/bs/N-K53.jpg">ลิซ่า&โรเซ่</option>
+                            <option value="assets/image/bs/N-K54.jpg">ต่ายใบ้หวย</option>
+                            <option value="assets/image/bs/N-K32.jpg">ไพ่(จันทร์)</option>
+                            <option value="assets/image/bs/N-K34.jpg">ไพ่(อังคาร)</option>
+                            <option value="assets/image/bs/N-K33.jpg">ไพ่(พุธ)</option>
+                            <option value="assets/image/bs/N-K30.jpg">ไพ่(พฤหัส)</option>
+                            <option value="assets/image/bs/N-K29.jpg">ไพ่(ศุกร์)</option>
+                            <option value="assets/image/bs/N-K23.jpg">ไพ่(เสาร์)</option>
+                            <option value="assets/image/bs/N-K31.jpg">ไพ่(อาทิตย์)</option>
+                            <option value="assets/image/bs/N-K58.jpg">ลูฟี่(นิกะ)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <label for="QRCode" class="form-label">QR Code</label>
+                        <input type="file" class="form-control" id="QRCode" name="QRCode" accept="image/*" onchange="updateDisplay()">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn-kbank w-100 mt-1 mb-4" onclick="downloadImage()">
+                <i class="bi bi-download me-2"></i> DOWNLOAD สลิป
+            </button>
+        </div>
+
+        <div class="col-lg-8 d-none d-lg-block">
+            <div class="holo-display-wrapper">
+                <div class="holo-card">
+                    <div class="holo-screen" id="display">
+                        <canvas id="canvas" width="842" height="1200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ดึงเวลาปัจจุบันใส่ช่องเวลาเมื่อโหลดหน้าเว็บ
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('datetime').value = now.toISOString().slice(0, 19);
+        
+        // เพิ่มคำสั่งนี้: สั่งให้ Canvas อัปเดตเวลาลงบนสลิปทันทีที่โหลดหน้าเว็บเสร็จ
+        setTimeout(function() {
+            if (typeof updateDisplay === "function") updateDisplay();
+        }, 300);
+    });
+
+    // สคริปต์เปลี่ยนรูปแบบเลขบัญชีผู้รับอัตโนมัติ ตามธนาคารที่เลือก
+    function autoFormatAccount() {
+        const bank = document.getElementById('bank').value;
+        const accInput = document.getElementById('receiveraccount');
+        
+        if (bank === 'ธ.ออมสิน' || bank === 'ธ.ก.ส.') {
+            accInput.value = 'xxx-x-x0000-xxx';
+        } else if (bank === 'รหัสพร้อมเพย์') {
+            accInput.value = 'xxx-xxx-0000';
+        } else if (bank === 'พร้อมเพย์วอลเล็ท') {
+            accInput.value = '000-xxxxxxxx-0000';
+        } else {
+            accInput.value = 'xxx-x-x5269-x';
+        }
+    }
+
+    function syncNoteBackground() {
+        const n = document.getElementById('backgroundSelect');
+        const nt = document.getElementById('bg_note');
+        if (n && nt) nt.selectedIndex = n.selectedIndex;
+    }
+    
+    function syncNormalBackground() {
+        const n = document.getElementById('backgroundSelect');
+        const nt = document.getElementById('bg_note');
+        if (n && nt) n.selectedIndex = nt.selectedIndex;
+    }
+    
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    const body = document.body;
+
+    themeToggleBtn.addEventListener('click', () => {
+        body.classList.toggle('theme-pastel');
+        if (body.classList.contains('theme-pastel')) {
+            themeIcon.className = 'bi bi-brightness-high-fill me-1';
+            themeText.innerText = "โหมดกลางคืน";
+        } else {
+            themeIcon.className = 'bi bi-moon-stars-fill me-1';
+            themeText.innerText = "โหมดพาสเทล";
+        }
+    });
+</script>
+
+<script src="js/slipkbank5.js"></script>
+<script src="js/slipkbank_note5.js"></script>
+<script>
+  window.updateDisplay = function() {
+    const mc = document.getElementById('modeSwitch');
+    if (mc && mc.checked) {
+      if (typeof window.updateDisplayNote === 'function') window.updateDisplayNote();
+    } else {
+      if (typeof window.updateDisplayStandard === 'function') window.updateDisplayStandard();
+    }
+  };
+
+  function toggleMode() {
+    const mc = document.getElementById('modeSwitch');
+    const no = document.getElementById('noteOptions');
+    if (!mc || !no) return;
+    no.style.display = mc.checked ? 'block' : 'none';
+    if(mc.checked) syncNoteBackground(); else syncNormalBackground();
+    window.updateDisplay();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.initStandard === 'function') window.initStandard();
+    const mc = document.getElementById('modeSwitch');
+    const no = document.getElementById('noteOptions');
+    if (mc && no) no.style.display = mc.checked ? 'block' : 'none';
+  });
+
+  (function() {
+    const OriginalImage = window.Image;
+    window.Image = function() {
+        const img = new OriginalImage();
+        const originalSet = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src').set;
+        Object.defineProperty(img, 'src', {
+            set: function(value) {
+                if (value && typeof value === 'string' && value.includes('assets/image/bs/')) {
+                    value = value.split('?')[0] + '?v=' + new Date().getTime();
+                }
+                originalSet.call(this, value);
+            }
+        });
+        return img;
+    };
+  })();
+</script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyARW02U4K0Ucx9Eq8IWfeR6pVMerfo0v7A",
+        authDomain: "slip-premium-app.firebaseapp.com",
+        projectId: "slip-premium-app",
+        storageBucket: "slip-premium-app.firebasestorage.app",
+        messagingSenderId: "217644633711",
+        appId: "1:217644633711:web:645b3e0fa46d2232fbc79a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // เช็คว่ามีคนล็อกอินอยู่ไหม ถ้าไม่มีเตะกลับหน้า login.html ทันที
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+    });
+
+    // ฟังก์ชันสำหรับปุ่มออกจากระบบ
+    window.logoutApp = () => {
+        signOut(auth).then(() => {
+            window.location.href = 'login.html';
+        });
+    };
+</script>
+</body>
+</html>
